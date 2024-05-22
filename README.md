@@ -76,10 +76,5 @@ npx prisma db push
 npm run dev
 ```
 
-## Available commands
 
-Running commands with npm `npm run [command]`
 
-| command         | description                              |
-| :-------------- | :--------------------------------------- |
-| `npm run dev`           | Starts a development instance of the app |
