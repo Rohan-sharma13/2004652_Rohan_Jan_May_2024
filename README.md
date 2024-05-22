@@ -1,4 +1,4 @@
-# Build an LMS Platform: Next.js 13,  React, Stripe, Mux, Prisma, Tailwind, MySQL 
+# Build an E-Learning Platform: Next.js 13,  React, Stripe, Mux, Prisma, Tailwind, MySQL 
 Key Features:
 
 - Browse & Filter Courses
