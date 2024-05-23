@@ -3,7 +3,8 @@ import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 
 import { db } from "@/lib/db";
-
+import { PrismaClient } from "@prisma/client";
+let prisma=new PrismaClient;
 const { Video } = new Mux(
   process.env.MUX_TOKEN_ID!,
   process.env.MUX_TOKEN_SECRET!,
@@ -20,7 +21,7 @@ export async function DELETE(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const ownCourse = await db.course.findUnique({
+    const ownCourse = await prisma.course.findUnique({
       where: {
         id: params.courseId,
         userId,
@@ -31,7 +32,7 @@ export async function DELETE(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const chapter = await db.chapter.findUnique({
+    const chapter = await prisma.chapter.findUnique({
       where: {
         id: params.chapterId,
         courseId: params.courseId,
@@ -43,7 +44,7 @@ export async function DELETE(
     }
 
     if (chapter.videoUrl) {
-      const existingMuxData = await db.muxData.findFirst({
+      const existingMuxData = await prisma.muxData.findFirst({
         where: {
           chapterId: params.chapterId,
         }
@@ -51,7 +52,7 @@ export async function DELETE(
 
       if (existingMuxData) {
         await Video.Assets.del(existingMuxData.assetId);
-        await db.muxData.delete({
+        await prisma.muxData.delete({
           where: {
             id: existingMuxData.id,
           }
@@ -59,13 +60,13 @@ export async function DELETE(
       }
     }
 
-    const deletedChapter = await db.chapter.delete({
+    const deletedChapter = await prisma.chapter.delete({
       where: {
         id: params.chapterId
       }
     });
 
-    const publishedChaptersInCourse = await db.chapter.findMany({
+    const publishedChaptersInCourse = await prisma.chapter.findMany({
       where: {
         courseId: params.courseId,
         isPublished: true,
@@ -73,7 +74,7 @@ export async function DELETE(
     });
 
     if (!publishedChaptersInCourse.length) {
-      await db.course.update({
+      await prisma.course.update({
         where: {
           id: params.courseId,
         },
@@ -102,7 +103,7 @@ export async function PATCH(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const ownCourse = await db.course.findUnique({
+    const ownCourse = await prisma.course.findUnique({
       where: {
         id: params.courseId,
         userId
@@ -113,7 +114,7 @@ export async function PATCH(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const chapter = await db.chapter.update({
+    const chapter = await prisma.chapter.update({
       where: {
         id: params.chapterId,
         courseId: params.courseId,
@@ -124,7 +125,7 @@ export async function PATCH(
     });
 
     if (values.videoUrl) {
-      const existingMuxData = await db.muxData.findFirst({
+      const existingMuxData = await prisma.muxData.findFirst({
         where: {
           chapterId: params.chapterId,
         }
@@ -132,7 +133,7 @@ export async function PATCH(
 
       if (existingMuxData) {
         await Video.Assets.del(existingMuxData.assetId);
-        await db.muxData.delete({
+        await prisma.muxData.delete({
           where: {
             id: existingMuxData.id,
           }
@@ -145,7 +146,7 @@ export async function PATCH(
         test: false,
       });
 
-      await db.muxData.create({
+      await prisma.muxData.create({
         data: {
           chapterId: params.chapterId,
           assetId: asset.id,

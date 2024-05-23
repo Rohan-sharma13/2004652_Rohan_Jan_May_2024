@@ -6,7 +6,8 @@ import { getProgress } from "@/actions/get-progress";
 
 import { CourseSidebar } from "./_components/course-sidebar";
 import { CourseNavbar } from "./_components/course-navbar";
-
+import { PrismaClient } from "@prisma/client";
+let prisma=new PrismaClient;
 const CourseLayout = async ({
   children,
   params
@@ -20,7 +21,7 @@ const CourseLayout = async ({
     return redirect("/")
   }
 
-  const course = await db.course.findUnique({
+  const course = await prisma.course.findUnique({
     where: {
       id: params.courseId,
     },

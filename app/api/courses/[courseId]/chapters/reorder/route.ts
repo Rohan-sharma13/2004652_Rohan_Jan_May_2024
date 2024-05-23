@@ -2,7 +2,8 @@ import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 
 import { db } from "@/lib/db";
-
+import { PrismaClient } from "@prisma/client";
+let prisma=new PrismaClient;
 export async function PUT(
   req: Request,
   { params }: { params: { courseId: string; } }
@@ -16,7 +17,7 @@ export async function PUT(
 
     const { list } = await req.json();
 
-    const ownCourse = await db.course.findUnique({
+    const ownCourse = await prisma.course.findUnique({
       where: {
         id: params.courseId,
         userId: userId
@@ -28,7 +29,7 @@ export async function PUT(
     }
 
     for (let item of list) {
-      await db.chapter.update({
+      await prisma.chapter.update({
         where: { id: item.id },
         data: { position: item.position }
       });

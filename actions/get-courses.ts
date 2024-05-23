@@ -2,7 +2,8 @@ import { Category, Course } from "@prisma/client";
 
 import { getProgress } from "@/actions/get-progress";
 import { db } from "@/lib/db";
-
+import { PrismaClient } from "@prisma/client";
+let prisma=new PrismaClient;
 type CourseWithProgressWithCategory = Course & {
   category: Category | null;
   chapters: { id: string }[];
@@ -21,7 +22,7 @@ export const getCourses = async ({
   categoryId
 }: GetCourses): Promise<CourseWithProgressWithCategory[]> => {
   try {
-    const courses = await db.course.findMany({
+    const courses = await prisma.course.findMany({
       where: {
         isPublished: true,
         title: {

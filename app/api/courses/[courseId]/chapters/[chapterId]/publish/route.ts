@@ -2,7 +2,8 @@ import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 
 import { db } from "@/lib/db";
-
+import { PrismaClient } from "@prisma/client";
+let prisma=new PrismaClient;
 export async function PATCH(
   req: Request,
   { params }: { params: { courseId: string; chapterId: string } }
@@ -14,7 +15,7 @@ export async function PATCH(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const ownCourse = await db.course.findUnique({
+    const ownCourse = await prisma.course.findUnique({
       where: {
         id: params.courseId,
         userId
@@ -25,14 +26,14 @@ export async function PATCH(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const chapter = await db.chapter.findUnique({
+    const chapter = await prisma.chapter.findUnique({
       where: {
         id: params.chapterId,
         courseId: params.courseId,
       }
     });
 
-    const muxData = await db.muxData.findUnique({
+    const muxData = await prisma.muxData.findUnique({
       where: {
         chapterId: params.chapterId,
       }
@@ -42,7 +43,7 @@ export async function PATCH(
       return new NextResponse("Missing required fields", { status: 400 });
     }
 
-    const publishedChapter = await db.chapter.update({
+    const publishedChapter = await prisma.chapter.update({
       where: {
         id: params.chapterId,
         courseId: params.courseId,

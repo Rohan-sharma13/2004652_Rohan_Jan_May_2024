@@ -12,7 +12,8 @@ import { ChapterDescriptionForm } from "./_components/chapter-description-form";
 import { ChapterAccessForm } from "./_components/chapter-access-form";
 import { ChapterVideoForm } from "./_components/chapter-video-form";
 import { ChapterActions } from "./_components/chapter-actions";
-
+import { PrismaClient } from "@prisma/client";
+let prisma=new PrismaClient;
 const ChapterIdPage = async ({
   params
 }: {
@@ -24,7 +25,7 @@ const ChapterIdPage = async ({
     return redirect("/");
   }
 
-  const chapter = await db.chapter.findUnique({
+  const chapter = await prisma.chapter.findUnique({
     where: {
       id: params.chapterId,
       courseId: params.courseId

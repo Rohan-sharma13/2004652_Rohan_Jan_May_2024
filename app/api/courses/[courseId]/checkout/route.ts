@@ -4,6 +4,9 @@ import { NextResponse } from "next/server";
 
 import { db } from "@/lib/db";
 import { stripe } from "@/lib/stripe";
+import { use } from "react";
+import { PrismaClient } from "@prisma/client";
+let prisma=new PrismaClient;
 
 export async function POST(
   req: Request,
@@ -11,19 +14,19 @@ export async function POST(
 ) {
   try {
     const user = await currentUser();
-
+   
     if (!user || !user.id || !user.emailAddresses?.[0]?.emailAddress) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const course = await db.course.findUnique({
+    const course = await prisma.course.findUnique({
       where: {
         id: params.courseId,
         isPublished: true,
       }
     });
-
-    const purchase = await db.purchase.findUnique({
+  
+    const purchase = await prisma.purchase.findUnique({
       where: {
         userId_courseId: {
           userId: user.id,
@@ -31,7 +34,7 @@ export async function POST(
         }
       }
     });
-
+  
     if (purchase) {
       return new NextResponse("Already purchased", { status: 400 });
     }
@@ -54,7 +57,7 @@ export async function POST(
       }
     ];
 
-    let stripeCustomer = await db.stripeCustomer.findUnique({
+    let stripeCustomer = await prisma.stripeCustomer.findUnique({
       where: {
         userId: user.id,
       },
@@ -62,13 +65,12 @@ export async function POST(
         stripeCustomerId: true,
       }
     });
-
     if (!stripeCustomer) {
       const customer = await stripe.customers.create({
         email: user.emailAddresses[0].emailAddress,
       });
 
-      stripeCustomer = await db.stripeCustomer.create({
+      stripeCustomer = await prisma.stripeCustomer.create({
         data: {
           userId: user.id,
           stripeCustomerId: customer.id,

@@ -6,7 +6,8 @@ import { db } from "@/lib/db";
 import { CourseProgress } from "@/components/course-progress";
 
 import { CourseSidebarItem } from "./course-sidebar-item";
-
+import { PrismaClient } from "@prisma/client";
+let prisma=new PrismaClient;
 interface CourseSidebarProps {
   course: Course & {
     chapters: (Chapter & {
@@ -26,7 +27,7 @@ export const CourseSidebar = async ({
     return redirect("/");
   }
 
-  const purchase = await db.purchase.findUnique({
+  const purchase = await prisma.purchase.findUnique({
     where: {
       userId_courseId: {
         userId,

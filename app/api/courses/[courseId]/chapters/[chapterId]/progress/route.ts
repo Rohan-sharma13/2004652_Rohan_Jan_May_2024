@@ -2,7 +2,8 @@ import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 
 import { db } from "@/lib/db";
-
+import { PrismaClient } from "@prisma/client";
+let prisma=new PrismaClient;
 export async function PUT(
   req: Request,
   { params }: { params: { courseId: string; chapterId: string } }
@@ -15,7 +16,7 @@ export async function PUT(
       return new NextResponse("Unauthorized", { status: 401 });
     } 
 
-    const userProgress = await db.userProgress.upsert({
+    const userProgress = await prisma.userProgress.upsert({
       where: {
         userId_chapterId: {
           userId,

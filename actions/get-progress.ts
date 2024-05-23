@@ -1,11 +1,12 @@
 import { db } from "@/lib/db";
-
+import { PrismaClient } from "@prisma/client";
+let prisma=new PrismaClient;
 export const getProgress = async (
   userId: string,
   courseId: string,
 ): Promise<number> => {
   try {
-    const publishedChapters = await db.chapter.findMany({
+    const publishedChapters = await prisma.chapter.findMany({
       where: {
         courseId: courseId,
         isPublished: true,
@@ -17,7 +18,7 @@ export const getProgress = async (
 
     const publishedChapterIds = publishedChapters.map((chapter) => chapter.id);
 
-    const validCompletedChapters = await db.userProgress.count({
+    const validCompletedChapters = await prisma.userProgress.count({
       where: {
         userId: userId,
         chapterId: {

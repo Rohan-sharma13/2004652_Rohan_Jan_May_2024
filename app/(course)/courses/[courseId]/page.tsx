@@ -1,12 +1,13 @@
 import { db } from "@/lib/db";
 import { redirect } from "next/navigation";
-
+import { PrismaClient } from "@prisma/client";
+let prisma=new PrismaClient;
 const CourseIdPage = async ({
   params
 }: {
   params: { courseId: string; }
 }) => {
-  const course = await db.course.findUnique({
+  const course = await prisma.course.findUnique({
     where: {
       id: params.courseId,
     },

@@ -5,7 +5,8 @@ import { db } from "@/lib/db";
 
 import { DataTable } from "./_components/data-table";
 import { columns } from "./_components/columns";
-
+import { PrismaClient } from "@prisma/client";
+let prisma=new PrismaClient;
 const CoursesPage = async () => {
   const { userId } = auth();
 
@@ -13,7 +14,7 @@ const CoursesPage = async () => {
     return redirect("/");
   }
 
-  const courses = await db.course.findMany({
+  const courses = await prisma.course.findMany({
     where: {
       userId,
     },

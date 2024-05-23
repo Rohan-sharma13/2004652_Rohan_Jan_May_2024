@@ -2,7 +2,8 @@ import { Category, Chapter, Course } from "@prisma/client";
 
 import { db } from "@/lib/db";
 import { getProgress } from "@/actions/get-progress";
-
+import { PrismaClient } from "@prisma/client";
+let prisma=new PrismaClient;
 type CourseWithProgressWithCategory = Course & {
   category: Category;
   chapters: Chapter[];
@@ -16,7 +17,7 @@ type DashboardCourses = {
 
 export const getDashboardCourses = async (userId: string): Promise<DashboardCourses> => {
   try {
-    const purchasedCourses = await db.purchase.findMany({
+    const purchasedCourses = await prisma.purchase.findMany({
       where: {
         userId: userId,
       },

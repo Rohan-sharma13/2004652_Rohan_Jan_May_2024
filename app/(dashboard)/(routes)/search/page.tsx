@@ -7,7 +7,8 @@ import { getCourses } from "@/actions/get-courses";
 import { CoursesList } from "@/components/courses-list";
 
 import { Categories } from "./_components/categories";
-
+import { PrismaClient } from "@prisma/client";
+let prisma=new PrismaClient;
 interface SearchPageProps {
   searchParams: {
     title: string;
@@ -24,7 +25,7 @@ const SearchPage = async ({
     return redirect("/");
   }
 
-  const categories = await db.category.findMany({
+  const categories = await prisma.category.findMany({
     orderBy: {
       name: "asc"
     }

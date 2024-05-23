@@ -2,7 +2,8 @@ import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 
 import { db } from "@/lib/db";
-
+import { PrismaClient } from "@prisma/client";
+let prisma=new PrismaClient;
 export async function DELETE(
   req: Request,
   { params }: { params: { courseId: string, attachmentId: string } }
@@ -14,7 +15,7 @@ export async function DELETE(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const courseOwner = await db.course.findUnique({
+    const courseOwner = await prisma.course.findUnique({
       where: {
         id: params.courseId,
         userId: userId
@@ -25,7 +26,7 @@ export async function DELETE(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const attachment = await db.attachment.delete({
+    const attachment = await prisma.attachment.delete({
       where: {
         courseId: params.courseId,
         id: params.attachmentId,

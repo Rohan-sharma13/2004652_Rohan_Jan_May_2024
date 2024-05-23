@@ -14,7 +14,8 @@ import { PriceForm } from "./_components/price-form";
 import { AttachmentForm } from "./_components/attachment-form";
 import { ChaptersForm } from "./_components/chapters-form";
 import { Actions } from "./_components/actions";
-
+import { PrismaClient } from "@prisma/client";
+let prisma=new PrismaClient;
 const CourseIdPage = async ({
   params
 }: {
@@ -26,7 +27,7 @@ const CourseIdPage = async ({
     return redirect("/");
   }
 
-  const course = await db.course.findUnique({
+  const course = await prisma.course.findUnique({
     where: {
       id: params.courseId,
       userId
@@ -45,7 +46,7 @@ const CourseIdPage = async ({
     },
   });
 
-  const categories = await db.category.findMany({
+  const categories = await prisma.category.findMany({
     orderBy: {
       name: "asc",
     },

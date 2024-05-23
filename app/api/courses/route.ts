@@ -3,7 +3,8 @@ import { NextResponse } from "next/server";
 
 import { db } from "@/lib/db";
 import { isTeacher } from "@/lib/teacher";
-
+import { PrismaClient } from "@prisma/client";
+let prisma=new PrismaClient;
 export async function POST(
   req: Request,
 ) {
@@ -15,7 +16,7 @@ export async function POST(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const course = await db.course.create({
+    const course = await prisma.course.create({
       data: {
         userId,
         title,

@@ -2,7 +2,8 @@ import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 
 import { db } from "@/lib/db";
-
+import { PrismaClient } from "@prisma/client";
+let prisma=new PrismaClient;
 export async function PATCH(
   req: Request,
   { params }: { params: { courseId: string; chapterId: string } }
@@ -14,7 +15,7 @@ export async function PATCH(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const ownCourse = await db.course.findUnique({
+    const ownCourse = await prisma.course.findUnique({
       where: {
         id: params.courseId,
         userId
@@ -25,7 +26,7 @@ export async function PATCH(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const unpublishedChapter = await db.chapter.update({
+    const unpublishedChapter = await prisma.chapter.update({
       where: {
         id: params.chapterId,
         courseId: params.courseId,
@@ -35,7 +36,7 @@ export async function PATCH(
       }
     });
 
-    const publishedChaptersInCourse = await db.chapter.findMany({
+    const publishedChaptersInCourse = await prisma.chapter.findMany({
       where: {
         courseId: params.courseId,
         isPublished: true,
@@ -43,7 +44,7 @@ export async function PATCH(
     });
 
     if (!publishedChaptersInCourse.length) {
-      await db.course.update({
+      await prisma.course.update({
         where: {
           id: params.courseId,
         },
